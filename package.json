@@ -1,0 +1,44 @@
+{
+  "name": "container-scanner-backend",
+  "version": "1.0.0",
+  "description": "Production-ready backend scaffold for the container scanner application",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js"
+  },
+  "keywords": [
+    "express",
+    "typescript",
+    "supabase",
+    "barcode",
+    "container-scanner"
+  ],
+  "author": "Container Scanner Team",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
+    "bcrypt": "^5.1.1",
+    "compression": "^1.6.2",
+    "cors": "^2.8.1",
+    "dotenv": "^16.4.1",
+    "express": "^4.21.2",
+    "helmet": "^8.0.1",
+    "jsonwebtoken": "^9.0.1",
+    "morgan": "^1.10.1",
+    "uuid": "^10.0.0",
+    "zod": "^3.23.3"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/compression": "^1.6.0",
+    "@types/cors": "^2.8.0",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.1",
+    "@types/morgan": "^1.9.0",
+    "@types/node": "^22.10.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.3"
+  }
+}
