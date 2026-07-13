@@ -57,6 +57,17 @@ CREATE TABLE IF NOT EXISTS settings (
     description TEXT NULL
 );
 
+CREATE TABLE IF NOT EXISTS app_settings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    app_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    maintenance BOOLEAN NOT NULL DEFAULT FALSE,
+    force_update BOOLEAN NOT NULL DEFAULT FALSE,
+    minimum_version TEXT NOT NULL DEFAULT '1.0.0',
+    latest_version TEXT NOT NULL DEFAULT '1.0.0',
+    expiry_date DATE NULL,
+    message TEXT NOT NULL DEFAULT 'Welcome'
+);
+
 CREATE TABLE IF NOT EXISTS audit_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NULL,

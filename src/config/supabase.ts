@@ -10,8 +10,6 @@ if (!supabaseUrl || !supabaseServiceRoleKey) {
   );
 }
 
-console.log("Supabase URL:", supabaseUrl);
-console.log("Service Key Prefix:", supabaseServiceRoleKey.substring(0, 30));
-console.log("Service Key Length:", supabaseServiceRoleKey.length);
+
 
 export const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
