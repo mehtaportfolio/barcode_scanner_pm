@@ -8,6 +8,16 @@ const parseList = (value?: string) =>
     .map((item) => item.trim())
     .filter(Boolean) || [];
 
+const isProduction = (process.env.NODE_ENV || 'development').toLowerCase() === 'production';
+
+if (isProduction && !process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET must be configured in production.');
+}
+
+if (isProduction && (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY)) {
+  throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be configured in production.');
+}
+
 export const env = {
   port: Number(process.env.PORT || 5000),
   host: process.env.HOST || '0.0.0.0',

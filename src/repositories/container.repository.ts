@@ -16,12 +16,21 @@ export const containerRepository = {
   async findAll() {
     return supabase
       .from('containers')
-      .select('id, container_number, status, created_at, closed_at')
+      .select('id, container_number, status, created_at, closed_at, created_by')
       .order('created_at', { ascending: false });
   },
 
   async findById(id: string) {
     return supabase.from('containers').select('*').eq('id', id).single();
+  },
+
+  async findByIdForUser(id: string, userId: string) {
+    return supabase
+      .from('containers')
+      .select('*')
+      .eq('id', id)
+      .or(`created_by.eq.${userId},created_by.is.null`)
+      .single();
   },
 
   async close(id: string) {

@@ -5,20 +5,23 @@ export const errorHandler = (err: Error, _req: Request, res: Response, _next: Ne
   let statusCode = 500;
   let message = err.message || 'Internal Server Error';
 
-  // Handle JSON parsing errors
   if (err instanceof SyntaxError && 'body' in err) {
     statusCode = 400;
     message = 'Invalid JSON in request body';
   }
 
-  // Handle custom error status codes
   const customError = err as Error & { statusCode?: number };
   if (customError.statusCode) {
     statusCode = customError.statusCode;
   }
 
-  console.error(`\n[ERROR ${statusCode}] ${message}`);
-  console.error(`Stack: ${err.stack}\n`);
+  if (statusCode >= 500) {
+    console.error(`\n[ERROR ${statusCode}] ${message}`);
+    console.error(`Stack: ${err.stack}\n`);
+  } else {
+    console.warn(`[WARN ${statusCode}] ${message}`);
+  }
+
   res.status(statusCode).json(errorResponse(message));
 };
 

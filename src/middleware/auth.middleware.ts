@@ -30,3 +30,21 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
     res.status(401).json({ success: false, message: 'Invalid or expired token.', data: null });
   }
 };
+
+export const authorize = (allowedRoles: string[]) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const user = (req as Request & { user?: { id: string; username: string; role: string } }).user;
+
+    if (!user) {
+      res.status(401).json({ success: false, message: 'Authentication required.', data: null });
+      return;
+    }
+
+    if (!allowedRoles.includes(user.role)) {
+      res.status(403).json({ success: false, message: 'Forbidden.', data: null });
+      return;
+    }
+
+    next();
+  };
+};

@@ -6,20 +6,35 @@ export const containerController = {
   async create(req: Request, res: Response): Promise<void> {
     try {
       const payload = req.body && typeof req.body === 'object' ? req.body : {};
-      console.log('[Container.create] Payload:', payload);
+      const user = (req as Request & { user?: { id: string; username: string; role: string } }).user;
+
+      if (!user) {
+        res.status(401).json(errorResponse('Authentication required.'));
+        return;
+      }
+
       const data = await containerService.create(payload);
       res.status(201).json(successResponse(data, 'Container created successfully.'));
     } catch (error) {
-      console.error('[Container.create] Error:', error);
       const message = error instanceof Error ? error.message : 'Unable to create container.';
       const statusCode = (error as Error & { statusCode?: number }).statusCode ?? 500;
       res.status(statusCode).json(errorResponse(message));
     }
   },
 
-  async list(_req: Request, res: Response): Promise<void> {
+  async list(req: Request, res: Response): Promise<void> {
     try {
-      const data = await containerService.list();
+      const user = (req as Request & { user?: { id: string; username: string; role: string } }).user;
+
+      if (!user) {
+        res.status(401).json(errorResponse('Authentication required.'));
+        return;
+      }
+
+      const data = await containerService.list({
+        userId: user?.id,
+        role: user?.role,
+      });
       res.json(successResponse(data, 'Containers retrieved successfully.'));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to list containers.';
@@ -29,8 +44,18 @@ export const containerController = {
 
   async getById(req: Request, res: Response): Promise<void> {
     try {
+      const user = (req as Request & { user?: { id: string; username: string; role: string } }).user;
+
+      if (!user) {
+        res.status(401).json(errorResponse('Authentication required.'));
+        return;
+      }
+
       const containerId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-      const data = await containerService.getById(containerId);
+      const data = await containerService.getById(containerId, {
+        userId: user?.id,
+        role: user?.role,
+      });
       res.json(successResponse(data, 'Container retrieved successfully.'));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to retrieve container.';
@@ -41,8 +66,18 @@ export const containerController = {
 
   async close(req: Request, res: Response): Promise<void> {
     try {
+      const user = (req as Request & { user?: { id: string; username: string; role: string } }).user;
+
+      if (!user) {
+        res.status(401).json(errorResponse('Authentication required.'));
+        return;
+      }
+
       const containerId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-      const data = await containerService.close(containerId);
+      const data = await containerService.close(containerId, {
+        userId: user?.id,
+        role: user?.role,
+      });
       res.json(successResponse(data, 'Container closed successfully.'));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to close container.';
@@ -53,8 +88,18 @@ export const containerController = {
 
   async reopen(req: Request, res: Response): Promise<void> {
     try {
+      const user = (req as Request & { user?: { id: string; username: string; role: string } }).user;
+
+      if (!user) {
+        res.status(401).json(errorResponse('Authentication required.'));
+        return;
+      }
+
       const containerId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-      const data = await containerService.reopen(containerId);
+      const data = await containerService.reopen(containerId, {
+        userId: user?.id,
+        role: user?.role,
+      });
       res.json(successResponse(data, 'Container reopened successfully.'));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to reopen container.';
@@ -65,8 +110,18 @@ export const containerController = {
 
   async delete(req: Request, res: Response): Promise<void> {
     try {
+      const user = (req as Request & { user?: { id: string; username: string; role: string } }).user;
+
+      if (!user) {
+        res.status(401).json(errorResponse('Authentication required.'));
+        return;
+      }
+
       const containerId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-      const data = await containerService.delete(containerId);
+      const data = await containerService.delete(containerId, {
+        userId: user?.id,
+        role: user?.role,
+      });
       res.json(successResponse(data, 'Container deleted successfully.'));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to delete container.';

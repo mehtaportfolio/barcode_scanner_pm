@@ -8,6 +8,15 @@ interface LoginInput {
   password: string;
 }
 
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+const maxAttempts = 5;
+const windowMs = 15 * 60 * 1000;
+
+const getClientKey = (data: LoginInput): string => {
+  const header = data?.username?.trim().toLowerCase() || 'unknown';
+  return `login:${header}`;
+};
+
 export const authService = {
   async login(data: LoginInput): Promise<unknown> {
     const username = data.username?.trim();
@@ -17,6 +26,23 @@ export const authService = {
       const error = new Error('Username and password are required.');
       (error as Error & { statusCode?: number }).statusCode = 400;
       throw error;
+    }
+
+    const clientKey = getClientKey({ username, password });
+    const now = Date.now();
+    const attemptState = loginAttempts.get(clientKey);
+
+    if (attemptState && attemptState.resetAt > now) {
+      if (attemptState.count >= maxAttempts) {
+        const error = new Error('Too many login attempts. Please try again later.');
+        (error as Error & { statusCode?: number }).statusCode = 429;
+        throw error;
+      }
+
+      attemptState.count += 1;
+      loginAttempts.set(clientKey, attemptState);
+    } else {
+      loginAttempts.set(clientKey, { count: 1, resetAt: now + windowMs });
     }
 
     const { data: user, error } = await userRepository.findByUsername(username);
@@ -38,6 +64,8 @@ export const authService = {
       (error as Error & { statusCode?: number }).statusCode = 401;
       throw error;
     }
+
+    loginAttempts.delete(clientKey);
 
     const token = jwt.sign(
       {
