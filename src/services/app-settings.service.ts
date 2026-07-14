@@ -96,7 +96,7 @@ export const appSettingsService = {
     }
 
     // If Supabase did not return the updated row (some SDK configs), do a fallback select
-    let finalData = updatedData;
+    let finalData: any = updatedData;
     if (!finalData) {
       const { data: reselect, error: reselectError } = await supabase
         .from('app_settings')
