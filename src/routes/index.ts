@@ -6,6 +6,7 @@ import appStatusRoutes from './app-status.routes';
 import authRoutes from './auth.routes';
 import barcodeRoutes from './barcode.routes';
 import containerRoutes from './container.routes';
+import exportRoutes from './export.routes';
 import settingsRoutes from './settings.routes';
 
 const router = Router();
@@ -27,6 +28,7 @@ router.use(`${API_PREFIX}/auth`, authRoutes);
 router.use(`${API_PREFIX}/app-settings`, authenticate, appSettingsRoutes);
 router.use(`${API_PREFIX}/containers`, authenticate, containerRoutes);
 router.use(`${API_PREFIX}/barcodes`, authenticate, barcodeRoutes);
+router.use(`${API_PREFIX}/exports`, authenticate, exportRoutes);
 router.use(`${API_PREFIX}/settings`, authenticate, settingsRoutes);
 
 export default router;

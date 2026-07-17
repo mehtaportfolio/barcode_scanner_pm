@@ -145,4 +145,41 @@ export const fallbackStore = {
 
     return { data, error: null };
   },
+
+  async findAllBarcodeExportRows(userId?: string) {
+    const rows = Array.from(containers.values())
+      .filter((container) => !userId || container.created_by === userId || container.created_by === null)
+      .flatMap((container) => {
+        const containerBarcodes = Array.from(barcodeScans.values()).filter((item) => item.container_id === container.id);
+
+        return containerBarcodes.map((barcode) => ({
+          container_number: container.container_number,
+          status: container.status,
+          barcode: barcode.barcode,
+        }));
+      });
+
+    return { data: rows, error: null };
+  },
+
+  async findContainerBarcodeExportRows(containerId: string, userId?: string) {
+    const container = containers.get(containerId);
+
+    if (!container) {
+      return { data: [], error: null };
+    }
+
+    if (userId && container.created_by && container.created_by !== userId) {
+      return { data: [], error: null };
+    }
+
+    const rows = Array.from(barcodeScans.values())
+      .filter((item) => item.container_id === containerId)
+      .map((item) => ({
+        barcode: item.barcode,
+        scanned_at: item.scanned_at,
+      }));
+
+    return { data: rows, error: null };
+  },
 };

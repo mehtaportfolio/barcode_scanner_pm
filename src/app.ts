@@ -15,22 +15,35 @@ const rateLimitWindowMs = 15 * 60 * 1000;
 
 app.disable('x-powered-by');
 app.use(helmet());
+const isAllowedOrigin = (origin?: string | null): boolean => {
+  if (!origin) {
+    return true;
+  }
+
+  if (env.nodeEnv !== 'production') {
+    if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+      return true;
+    }
+
+    if (origin.startsWith('http://192.168.') || origin.startsWith('https://localhost:')) {
+      return true;
+    }
+  }
+
+  return env.allowedOrigins.includes(origin);
+};
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) {
+      if (isAllowedOrigin(origin)) {
         callback(null, true);
         return;
       }
 
-      const allowedOrigins = env.allowedOrigins;
-
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-        return;
-      }
-
-      callback(new Error('Not allowed by CORS'));
+      const error = new Error('Not allowed by CORS');
+      (error as Error & { statusCode?: number }).statusCode = 403;
+      callback(error);
     },
     credentials: true,
   }),
